@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+Project using mobx-state-tree for state management and React-dnd for drag and drop
+
 ## Available Scripts
 
 In the project directory, you can run:

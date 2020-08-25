@@ -1,43 +1,46 @@
-import { TreeNodeType, ITEM_TYPE } from '@/data';
+import { TreeNodeModelType } from '@/models/TreeNode';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useStore from '@hooks/useStore';
+import { APP_STORE } from '@stores/AppStore';
 import classNames from 'classnames';
-import React, { useCallback, useState, useRef } from 'react';
-import { Button, Collapse, ListGroup, ListGroupItem } from 'reactstrap';
+import { observer, Observer } from 'mobx-react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
-  useDrop,
-  useDrag,
-  DragSourceMonitor,
   DragObjectWithType,
+  DragSourceMonitor,
+  useDrag,
+  useDrop,
 } from 'react-dnd';
+import { Button, Collapse, ListGroup, ListGroupItem } from 'reactstrap';
 
 interface TreeNodePropsType {
-  node: TreeNodeType;
-  moveNode: (arg0: string, arg1: string) => void;
-  isRoot?: boolean;
+  node: TreeNodeModelType;
 }
 
-const TreeNode: React.FC<TreeNodePropsType> = ({
-  node,
-  moveNode,
-  isRoot = false,
-}: TreeNodePropsType) => {
+const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
+  const { moveTreeNodes } = useStore(APP_STORE);
   const [opened, setOpened] = useState<boolean>(true);
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const [, dropRef] = useDrop({
-    accept: ITEM_TYPE,
-    hover(item: DragObjectWithType & TreeNodeType, monitor) {
-      if (!ref.current) {
+  const [{ isOverCurrent }, dropRef] = useDrop({
+    accept: node.type,
+    hover(item: DragObjectWithType & TreeNodeModelType, monitor) {
+      if (!ref.current || isOverCurrent === false) {
         return;
       }
-      console.log('use Drop on hover', item, node);
+
       const dragId = item.id;
       const hoverId = node.id;
 
       //if hovering itself
       if (dragId === hoverId) {
+        return;
+      }
+
+      //if dragging into parent
+      if (node.children.includes(dragId)) {
         return;
       }
 
@@ -50,27 +53,42 @@ const TreeNode: React.FC<TreeNodePropsType> = ({
       }
 
       const hoverClientY = mousePosition.y - hoveredRect.top;
-      console.log('mouse', mousePosition, hoverClientY);
 
       if (hoverClientY < hoverMiddleY) {
         return;
       }
 
-      console.log('bbb');
       if (hoverClientY > hoverMiddleY) {
         return;
       }
-      moveNode(dragId, hoverId);
-      // item.index = hoverIndex;
+
+      moveTreeNodes(item, node);
     },
+    collect: (monitor) => ({
+      isOverCurrent: monitor.isOver({ shallow: true }),
+    }),
   });
 
   const [{ isDragging }, drag] = useDrag({
-    item: { type: ITEM_TYPE, ...node },
+    item: { ...node, type: node.type },
+    canDrag: !node.isRoot,
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    end: (_dropResult, monitor) => {
+      const item = monitor.getItem();
+      const didDrop = monitor.didDrop();
+      if (!didDrop) {
+        console.log('drop', item.id, node.id);
+        moveTreeNodes(item, node);
+      }
+    },
   });
+
+  if (isDragging) {
+    //update parent to be not draggable
+    //node.parent.setIsDraggable(false);
+  }
 
   const handleToggleButtonclick = useCallback(() => setOpened(!opened), [
     opened,
@@ -80,15 +98,15 @@ const TreeNode: React.FC<TreeNodePropsType> = ({
   drag(dropRef(ref));
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className={classNames({ 'h-100': node.isRoot })}>
       <ListGroupItem
         className={classNames({
           'tree-view-item': true,
-          'vh-100': isRoot,
           'opacity-0': isDragging,
+          'h-100': node.isRoot,
         })}
       >
-        {node.children && (
+        {node.children.length > 0 && (
           <Button
             className="pl-0 no-underline no-box-shadow"
             color="link"
@@ -102,13 +120,19 @@ const TreeNode: React.FC<TreeNodePropsType> = ({
           </Button>
         )}
         {node.description}
-        {node.children && (
+        {node.children.length > 0 && (
           <Collapse isOpen={opened}>
-            {node.children?.map((treeNode) => (
-              <ListGroup key={treeNode.id}>
-                <TreeNode node={treeNode} moveNode={moveNode} />
-              </ListGroup>
-            ))}
+            <Observer>
+              {() => (
+                <>
+                  {node.children?.map((treeNode) => (
+                    <ListGroup key={treeNode.id}>
+                      <TreeNode node={treeNode} />
+                    </ListGroup>
+                  ))}
+                </>
+              )}
+            </Observer>
           </Collapse>
         )}
       </ListGroupItem>
@@ -116,4 +140,4 @@ const TreeNode: React.FC<TreeNodePropsType> = ({
   );
 };
 
-export default TreeNode;
+export default observer(TreeNode);

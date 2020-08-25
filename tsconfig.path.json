@@ -4,6 +4,9 @@
     "paths": {
       "@/*": ["*"],
       "@views/*": ["views/*"],
+      "@hooks/*": ["hooks/*"],
+      "@stores/*": ["stores/*"],
+      "@models/*": ["models/*"],
       "@database/*": ["database/*"],
       "@components/*": ["components/*"]
     }
