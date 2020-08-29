@@ -19,7 +19,7 @@ interface TreeNodePropsType {
 }
 
 const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
-  const { moveTreeNodes } = useStore(APP_STORE);
+  const { moveTreeNodes, addTreeNode } = useStore(APP_STORE);
   const [opened, setOpened] = useState<boolean>(true);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -54,15 +54,15 @@ const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
 
       const hoverClientY = mousePosition.y - hoveredRect.top;
 
-      if (hoverClientY < hoverMiddleY) {
-        return;
+      if (hoverClientY < hoverMiddleY && hoverClientY >= hoveredRect.bottom) {
+        moveTreeNodes(item, node);
       }
 
-      if (hoverClientY > hoverMiddleY) {
-        return;
+      if (hoverClientY > hoverMiddleY && hoverClientY <= hoveredRect.top) {
+        moveTreeNodes(item, node);
       }
 
-      moveTreeNodes(item, node);
+      addTreeNode(item, node);
     },
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true }),
@@ -75,14 +75,14 @@ const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: monitor.isDragging(),
     }),
-    end: (_dropResult, monitor) => {
-      const item = monitor.getItem();
-      const didDrop = monitor.didDrop();
-      if (!didDrop) {
-        console.log('drop', item.id, node.id);
-        moveTreeNodes(item, node);
-      }
-    },
+    // end: (_dropResult, monitor) => {
+    //   const item = monitor.getItem();
+    //   const didDrop = monitor.didDrop();
+    //   if (!didDrop) {
+    //     console.log('drop', item.id, node.id);
+    //     addTreeNode(item, node);
+    //   }
+    // },
   });
 
   if (isDragging) {

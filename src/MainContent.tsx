@@ -9,8 +9,8 @@ const MainContent: React.FC = () => {
   const { root } = useStore<AppStoreType>(APP_STORE);
 
   return (
-    <Container fluid>
-      <Row className="main-content vh-100">
+    <Container fluid className="main-content vh-100">
+      <Row className="">
         <Col md={9}>Main Editor</Col>
         <Col md={3} className="p-0">
           <ListGroup className="h-100">
