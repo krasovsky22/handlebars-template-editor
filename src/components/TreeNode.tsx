@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useStore from '@hooks/useStore';
 import { APP_STORE } from '@stores/AppStore';
 import classNames from 'classnames';
+import { debounce as _debounce } from 'lodash';
 import { observer, Observer } from 'mobx-react';
 import React, { useCallback, useRef, useState } from 'react';
 import {
@@ -26,44 +27,48 @@ const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
 
   const [{ isOverCurrent }, dropRef] = useDrop({
     accept: node.type,
-    hover(item: DragObjectWithType & TreeNodeModelType, monitor) {
-      if (!ref.current || isOverCurrent === false) {
-        return;
-      }
+    hover: _debounce(
+      (item: DragObjectWithType & TreeNodeModelType, monitor) => {
+        if (!ref.current || isOverCurrent === false) {
+          return;
+        }
 
-      const dragId = item.id;
-      const hoverId = node.id;
+        const dragId = item.id;
+        const hoverId = node.id;
 
-      //if hovering itself
-      if (dragId === hoverId) {
-        return;
-      }
+        //if hovering itself
+        if (dragId === hoverId) {
+          return;
+        }
 
-      //if dragging into parent
-      if (node.children.includes(dragId)) {
-        return;
-      }
+        //if dragging into parent
+        if (
+          node.children.findIndex(
+            (node: TreeNodeModelType) => node.id === dragId
+          ) >= 0
+        ) {
+          return;
+        }
 
-      const hoveredRect = ref.current.getBoundingClientRect();
-      const hoverMiddleY = (hoveredRect.bottom - hoveredRect.top) / 2;
+        const hoveredRect = ref.current.getBoundingClientRect();
+        const hoverRectSize = hoveredRect.bottom - hoveredRect.top;
+        // const hoverMiddleY = hoverRectSize / 2;
 
-      const mousePosition = monitor.getClientOffset();
-      if (!mousePosition) {
-        return;
-      }
+        const mousePosition = monitor.getClientOffset();
+        if (!mousePosition) {
+          return;
+        }
 
-      const hoverClientY = mousePosition.y - hoveredRect.top;
+        const hoverClientY = mousePosition.y - hoveredRect.top;
 
-      if (hoverClientY < hoverMiddleY && hoverClientY >= hoveredRect.bottom) {
-        moveTreeNodes(item, node);
-      }
-
-      if (hoverClientY > hoverMiddleY && hoverClientY <= hoveredRect.top) {
-        moveTreeNodes(item, node);
-      }
-
-      addTreeNode(item, node);
-    },
+        if (hoverClientY <= 10 || hoverClientY >= hoverRectSize - 10) {
+          moveTreeNodes(item, node);
+          return;
+        }
+        addTreeNode(item, node);
+      },
+      0.5
+    ),
     collect: (monitor) => ({
       isOverCurrent: monitor.isOver({ shallow: true }),
     }),
@@ -102,8 +107,10 @@ const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
       <ListGroupItem
         className={classNames({
           'tree-view-item': true,
+          'border-0': true,
           'opacity-0': isDragging,
           'h-100': node.isRoot,
+          'tree-node-hovered': isOverCurrent,
         })}
       >
         {node.children.length > 0 && (
@@ -140,4 +147,4 @@ const TreeNode: React.FC<TreeNodePropsType> = ({ node }: TreeNodePropsType) => {
   );
 };
 
-export default observer(TreeNode);
+export default React.memo(observer(TreeNode));

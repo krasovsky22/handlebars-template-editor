@@ -1,5 +1,5 @@
 import TreeNodeModel, { TreeNodeModelType } from '@/models/TreeNode';
-import { cast, Instance, types, getSnapshot } from 'mobx-state-tree';
+import { cast, Instance, types } from 'mobx-state-tree';
 import { TreeData } from './snapshots/treeData';
 
 const AppStore = types
@@ -41,7 +41,7 @@ const AppStore = types
         return;
       }
 
-      console.log(getSnapshot(dragNodeParent));
+      //console.log(getSnapshot(dragNodeParent));
       //remove current node from parent children
       dragNodeParent.children = dragNodeParent.children.filter(
         (child: TreeNodeModelType) => child.id !== dragNode.id
@@ -63,7 +63,7 @@ const AppStore = types
         (node) => node.id === dragNodeSnapshot.id
       );
 
-      console.log('move', dragNode?.id, hoverNode.id);
+      //console.log('move', dragNode?.id, hoverNode.id);
       if (!dragNode) {
         return;
       }
@@ -91,7 +91,6 @@ const AppStore = types
 
         //it not in hover, add it
         if (dragNodeIndex === -1) {
-          console.log('adding');
           newChildren.splice(hoverNodeIndex, 0, dragNode.id);
           dragNode.parent = hoverNodeParent;
 

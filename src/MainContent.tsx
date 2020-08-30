@@ -4,16 +4,19 @@ import { AppStoreType, APP_STORE } from '@stores/AppStore';
 import { observer } from 'mobx-react';
 import React from 'react';
 import { Col, Container, ListGroup, Row } from 'reactstrap';
+import MainEditor from '@/components/MainEditor';
 
 const MainContent: React.FC = () => {
   const { root } = useStore<AppStoreType>(APP_STORE);
 
   return (
     <Container fluid className="main-content vh-100">
-      <Row className="">
-        <Col md={9}>Main Editor</Col>
-        <Col md={3} className="p-0">
-          <ListGroup className="h-100">
+      <Row className="h-100">
+        <Col md={9}>
+          <MainEditor />
+        </Col>
+        <Col md={3}>
+          <ListGroup className="h-100 border">
             {root && <TreeNode node={root} />}
           </ListGroup>
         </Col>
