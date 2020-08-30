@@ -16,43 +16,48 @@ const EditorNode: React.FC<EditorNodeProps> = ({ node }: EditorNodeProps) => {
     console.log('Content was updated:', content);
   }, []);
 
+  const onFocusInHangle = () => {
+    console.log('focus in');
+  };
+
   return (
-    <DraggableWrapper node={node}>
+    <DraggableWrapper node={node} className="col">
       {({ isDragging, isOverCurrent }: DraggableWrapperPassPropsType) => (
-        <Row>
-          <Editor
-            initialValue={node.content}
-            apiKey={process.env.REACT_APP_TINY_MCE_KEY}
-            inline
-            init={{
-              menubar: true,
-              plugins: [
-                'code preview advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount',
-              ],
-              toolbar:
-                'code preview | undo redo | formatselect | bold italic backcolor | \
+        <>
+          {!node.isRoot && (
+            <Editor
+              initialValue={node.content}
+              apiKey={process.env.REACT_APP_TINY_MCE_KEY}
+              inline
+              init={{
+                menubar: true,
+                plugins: [
+                  'code preview advlist autolink lists link image charmap print preview anchor',
+                  'searchreplace visualblocks code fullscreen',
+                  'insertdatetime media table paste code help wordcount',
+                ],
+                toolbar:
+                  'code preview | undo redo | formatselect | bold italic backcolor | \
       alignleft aligncenter alignright alignjustify | \
       bullist numlist outdent indent | removeformat | help',
-            }}
-            onEditorChange={handleEditorChange}
-          />
+              }}
+              onEditorChange={handleEditorChange}
+              onFocusIn={onFocusInHangle}
+            />
+          )}
 
           {node.children.length > 0 && (
             <Observer>
               {() => (
-                <>
+                <Row>
                   {node.children?.map((treeNode) => (
-                    <Col key={treeNode.id}>
-                      <EditorNode node={treeNode} />
-                    </Col>
+                    <EditorNode key={treeNode.id} node={treeNode} />
                   ))}
-                </>
+                </Row>
               )}
             </Observer>
           )}
-        </Row>
+        </>
       )}
     </DraggableWrapper>
   );

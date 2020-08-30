@@ -11,8 +11,10 @@ const MainContent: React.FC = () => {
 
   return (
     <Container fluid className="main-content vh-100">
-      <Row className="h-100">
-        <Col md={9}>{root && <EditorNode node={root} />}</Col>
+      <Row className="h-100 mt-5">
+        <Col md={9}>
+          <Row>{root && <EditorNode node={root} />}</Row>
+        </Col>
         <Col md={3}>
           <ListGroup className="h-100 border">
             {root && <TreeNode node={root} />}

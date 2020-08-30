@@ -13,6 +13,7 @@ import {
 interface DraggableWrapperProps {
   children: (arg1: DraggableWrapperPassPropsType) => React.ReactNode;
   node: TreeNodeModelType;
+  className?: string;
 }
 
 export type DraggableWrapperPassPropsType = {
@@ -24,6 +25,7 @@ export type DraggableWrapperPassPropsType = {
 const DraggableWrapper: React.FC<DraggableWrapperProps> = ({
   node,
   children,
+  className = '',
 }: DraggableWrapperProps) => {
   const { moveTreeNodes, addTreeNode } = useStore(APP_STORE);
 
@@ -101,7 +103,11 @@ const DraggableWrapper: React.FC<DraggableWrapperProps> = ({
 
   drag(dropRef(ref));
 
-  return <div ref={ref}>{children({ node, isDragging, isOverCurrent })}</div>;
+  return (
+    <div ref={ref} className={className}>
+      {children({ node, isDragging, isOverCurrent })}
+    </div>
+  );
 };
 
 export default memo(DraggableWrapper);
