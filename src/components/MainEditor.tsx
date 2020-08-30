@@ -10,7 +10,7 @@ const MainEditor: React.FC = () => {
     <div className="pt-5 border h-100">
       <Editor
         initialValue="<p>This is the initial content of the editor</p>"
-        apiKey="ecj0got4g3zq5wya91v1x9wp78wtn8elj19j3j7vfmpb0cna"
+        apiKey={process.env.REACT_APP_TINY_MCE_KEY}
         inline
         init={{
           menubar: true,

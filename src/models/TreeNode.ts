@@ -5,6 +5,7 @@ const TreeNodeModel = types
     id: types.identifierNumber,
     name: types.string,
     description: types.maybeNull(types.string),
+    content: types.optional(types.string, ''),
     children: types.array(
       types.safeReference(types.late((): IAnyModelType => TreeNodeModel))
     ),

@@ -3,6 +3,7 @@ export const TreeData = [
     id: 0,
     name: 'root',
     description: 'Root',
+    content: '<p>Content 1</p>',
     parent: null,
     children: [1, 2, 3, 4],
   },
