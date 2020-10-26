@@ -12,12 +12,14 @@ const stores = { [APP_STORE]: AppStore.create() };
 const App: React.FC = () => {
   return (
     <Provider {...stores}>
-      <>
+      <div className="editor-wrapper">
         <NavigationBar />
         <DndProvider backend={HTML5Backend}>
-          <MainContent />
+          <div className="editor-content-wrapper">
+            <MainContent />
+          </div>
         </DndProvider>
-      </>
+      </div>
     </Provider>
   );
 };

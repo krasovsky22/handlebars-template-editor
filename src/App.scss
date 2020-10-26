@@ -1,31 +1,62 @@
-.tree-view {
-  background-color: aqua;
+// .tree-view {
+//   background-color: aqua;
+// }
+
+// .no-underline {
+//   text-decoration: none !important;
+// }
+
+// .no-box-shadow {
+//   box-shadow: none !important;
+// }
+
+// .node-is-dragging {
+//   background-color: red;
+// }
+
+// .opacity-0 {
+//   opacity: 0 !important;
+// }
+
+// .main-content {
+//   padding-top: 5rem;
+// }
+
+// .tree-node-hovered {
+//   background-color: cyan !important;
+// }
+
+// [draggable='true'] {
+//   border: 1px double gainsboro;
+// }
+
+$top-nav-bar-height: 50px;
+
+.navbar {
+  height: $top-nav-bar-height;
 }
 
-.no-underline {
-  text-decoration: none !important;
+.editor-wrapper {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
 }
 
-.no-box-shadow {
-  box-shadow: none !important;
+.editor-content-wrapper {
+  position: relative;
+  top: $top-nav-bar-height;
+  height: calc(100% - #{$top-nav-bar-height});
 }
 
-.node-is-dragging {
-  background-color: red;
+// .active {
+//   border: 1px solid #3899ec;
+// }
+
+.current-hovered {
+  outline: 2px solid #0888c8;
+  outline-offset: -2px;
 }
 
-.opacity-0 {
-  opacity: 0 !important;
-}
-
-.main-content {
-  padding-top: 5rem;
-}
-
-.tree-node-hovered {
-  background-color: cyan !important;
-}
-
-[draggable='true'] {
-  border: 1px double gainsboro;
+.col {
+  min-height: 100px;
 }

@@ -20,7 +20,7 @@ const NavigationBar: React.FC = () => {
   const toggle = () => setIsOpen(!isOpen);
 
   return (
-    <Navbar color="dark" dark expand="md" fixed="top">
+    <Navbar color="light" light expand="md" fixed="top">
       <NavbarBrand href="/">reactstrap</NavbarBrand>
       <NavbarToggler onClick={toggle} />
       <Collapse isOpen={isOpen} navbar>
